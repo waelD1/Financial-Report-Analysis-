@@ -93,6 +93,8 @@ for year in years_2018_2020:
 
 
 ########################################## Data processing : changing data to put the tables in the same format
+#We will only use the 2020, 2017, and 2014 reports since they each contain results from the previous three years.
+
 
 #2020 to 2018
 df_2020 = dict_of_df[2020].iloc[:, [0,1,4,6]].copy()
