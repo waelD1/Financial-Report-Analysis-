@@ -13,6 +13,8 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 import io
 import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
 
 
 #Convert url to readable object for pdfminer.six
@@ -254,3 +256,53 @@ report['Other income, net'].interpolate(method='linear', inplace = True)
 
 # change again the type in int
 report['Other income, net'] = report['Other income, net'].astype(int)
+
+
+################################################################## Creating charts
+
+# Revenues over time
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=report.index, y=report['Total revenues'],
+                    mode='lines',
+                    name='Total Revenues (Products + Services)'))
+fig.add_trace(go.Scatter(x=report.index, y=report['Services'],
+                    mode='lines+markers',
+                    name='Revenues : Services'))
+fig.add_trace(go.Scatter(x=report.index, y=report['Products'],
+                    mode='lines+markers', name='Revenues : Products'))
+
+fig.show()
+
+# Total costs for year 2020
+list_cols = ['Cost of services (exclusive of depreciation and amortization)',
+'Cost of products (exclusive of depreciation and amortization)',
+'Selling, general, administrative and other',	
+'Depreciation and amortization']
+
+fig = px.pie(report.loc[2020], 
+              values=report.loc[2020][list_cols].values, 
+              names=list_cols,
+              color_discrete_sequence=px.colors.sequential.RdBu)
+fig.show()
+
+
+# Net income of Walt Disney Company over time
+import plotly.express as px
+fig = px.bar(report, x=report.index, y='Net income attributable to The Walt Disney Company (Disney)',
+             hover_data=['Net income attributable to The Walt Disney Company (Disney)'], color='Net income attributable to The Walt Disney Company (Disney)',
+             labels = {'Net income attributable to The Walt Disney Company (Disney)' : 'Net income (in millions)'}
+             )
+fig.show()
+
+
+
+# Share price over time
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=report.index, y=report['Earnings per share attributable to Disney: Diluted'],
+                   line =  dict(color='firebrick', width=4, dash='dot'),
+                   name = 'Earnings per share attributable to Disney: Diluted'))
+# Edit the layout
+fig.update_layout(title='Earnings per share of Disney over time (in $)',
+                   xaxis_title='Years',
+                   yaxis_title='shares price in dollars')
+fig.show()
