@@ -1,5 +1,5 @@
-# Financial Report Scrapping and Analysis
-Scrapping of The Walt Disney Company's annual reports to perform financial analysis.
+# Financial Report Scraping and Analysis
+Scraping of The Walt Disney Company's annual reports to perform financial analysis.
 
 ## Project details
 I used <b> pdfminer.six </b> and <b>tabula</b> to scrape the pdfs and get the consolidated income statements.<br>
