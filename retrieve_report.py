@@ -147,7 +147,7 @@ df_2020.drop(columns = ['Net income (loss) from continuing operations',
 df_2020['Weighted average number of common and common equivalent shares outstanding: Diluted'] = ['1,808', '1,666','1,507']
 df_2020['Weighted average number of common and common equivalent shares outstanding: Basic'] = ['1,808', '1,656','1,499']
 
-#adding a missing value that is in the PDF but not in the scrapped table
+#adding a missing value that is in the PDF but not in the scraped table
 df_2020['Less: Net income attributable to noncontrolling interests'].replace({np.nan : '390'}, inplace = True)
 
 
