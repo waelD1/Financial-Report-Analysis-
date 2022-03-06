@@ -120,7 +120,7 @@ df_2020.reset_index(drop=True, inplace = True)
 df_2020.rename(index={0:2020, 1 : 2019, 2 : 2018}, inplace = True)
 df_2020.drop(columns = ['Continuing operations $', 'Discontinued operations'], inplace = True)
 
-# rename columns with same name
+# rename columns that have the same name
 column_names = df_2020.columns.to_series()
 column_names.iloc[20] = earnings_diluted_2020
 column_names.iloc[21] = earnings_basic_2020
