@@ -208,7 +208,7 @@ df_2014.reset_index(drop=True, inplace = True)
 #rename index
 df_2014.rename(index={0:2014, 1 : 2013, 2 : 2012}, inplace = True)
 
-#rename columns to have the same as the others dataframe
+#rename columns to have the same as the other dataframes
 df_2014.rename(columns = {"Other income/(expense), net" : "Other income, net", "Interest income/(expense), net" : "Interest expense, net"}, inplace = True)
 
 # Adding missing parts of columns titles
