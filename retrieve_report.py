@@ -44,7 +44,7 @@ def find_page(url, string_to_find):
             break
   return page_report
 
-#The report are differents. We regroup the reports that are the most similar
+#The reports are different. We regroup the reports that are the most similar
 years_2010_2014 = [*range(2010,2015,1)]
 
 years_2015_2017 = [*range(2015,2018,1)]
@@ -80,7 +80,7 @@ for year in years_2018_2020:
   if year == 2020:
     string_to_find = "CONSOLIDATED STATEMENTS OF OPERATIONS" + "\n" + "(in millions, except per share data)"
   else:
-      #The string change for the year 2020
+      #The string changes for year 2020
     string_to_find = "CONSOLIDATED STATEMENTS OF INCOME" + "\n" + "(in millions, except per share data)"
   url_2018_2021 = f'https://thewaltdisneycompany.com/app/uploads/{year+1}/01/{year}-Annual-Report.pdf'
   pdf = url_to_pdf(url_2018_2021)
@@ -96,19 +96,22 @@ for year in years_2018_2020:
 #We will only use the 2020, 2017, and 2014 reports since they each contain results from the previous three years.
 
 
-#2020 to 2018
+#Get the dataframe for years 2018 to 2020 and rename index 
 df_2020 = dict_of_df[2020].iloc[:, [0,1,4,6]].copy()
-df_2020.rename(columns={'Revenues:' : 'index'}, inplace = True) #inplace=True
+df_2020.rename(columns={'Revenues:' : 'index'}, inplace = True) 
 
+# Due to a defect in the import of the tables, some titles have been separated on several empty columns.
+# We will therefore save the names of the useless columns and add them to the columns with the missing names.
 cost_2020 = df_2020['index'].loc[3]
 earnings_diluted_2020 = df_2020['index'].loc[21] + ' ' + df_2020['index'].loc[22]
 earnings_basic_2020 = df_2020['index'].loc[21] + ' ' +  df_2020['index'].loc[26]
 
+# Drop the useless columns and put the first row with the titles as header
 df_2020.drop(index=[3, 21,22,26], inplace = True)
 df_2020 = df_2020.T
-new_header = df_2020.iloc[0] #grab the first row for the header
-df_2020 = df_2020[1:] #take the data less the header row
-df_2020.columns = new_header #set the header row as the df header
+new_header = df_2020.iloc[0] 
+df_2020 = df_2020[1:] 
+df_2020.columns = new_header 
 
 #reset index
 df_2020.reset_index(drop=True, inplace = True)
@@ -117,7 +120,7 @@ df_2020.reset_index(drop=True, inplace = True)
 df_2020.rename(index={0:2020, 1 : 2019, 2 : 2018}, inplace = True)
 df_2020.drop(columns = ['Continuing operations $', 'Discontinued operations'], inplace = True)
 
-# first row as header
+# rename columns with same name
 column_names = df_2020.columns.to_series()
 column_names.iloc[20] = earnings_diluted_2020
 column_names.iloc[21] = earnings_basic_2020
@@ -148,7 +151,7 @@ df_2020['Weighted average number of common and common equivalent shares outstand
 df_2020['Less: Net income attributable to noncontrolling interests'].replace({np.nan : '390'}, inplace = True)
 
 
-#######################################
+####################################### Same process for the years 2015-2017
 #2017 to 2015
 df_2017 = dict_of_df[2017].iloc[:, [0,2,4,6]].copy()
 df_2017.rename(columns={'Revenues:' : 'index'}, inplace = True) #inplace=True
@@ -171,7 +174,7 @@ df_2017.reset_index(drop=True, inplace = True)
 #rename index
 df_2017.rename(index={0:2017, 1 : 2016, 2 : 2015}, inplace = True)
 
-#rename columns to have same name that all the others dataframe
+#rename columns to have same name as all the other dataframes
 column_names = df_2017.columns.to_series()
 column_names.iloc[17] = earnings_2017 + ' ' + column_names.iloc[17]
 column_names.iloc[18] = earnings_2017 + ' ' + column_names.iloc[18] 
@@ -181,7 +184,7 @@ column_names.iloc[20] = shares_2017 + ' ' + column_names.iloc[20]
 
 df_2017.columns = column_names
 
-#######################################
+####################################### Same process for the years 2012-2014
 
 #2014 to 2012
 df_2014 = dict_of_df[2014].iloc[:, [0,2,4,6]].copy()
@@ -205,9 +208,10 @@ df_2014.reset_index(drop=True, inplace = True)
 #rename index
 df_2014.rename(index={0:2014, 1 : 2013, 2 : 2012}, inplace = True)
 
-#rename column to have the same as the others dataframe
+#rename columns to have the same as the others dataframe
 df_2014.rename(columns = {"Other income/(expense), net" : "Other income, net", "Interest income/(expense), net" : "Interest expense, net"}, inplace = True)
 
+# Adding missing parts of columns titles
 column_names = df_2014.columns.to_series()
 column_names.iloc[17] = earnings_2014 + ' ' + column_names.iloc[17]
 column_names.iloc[18] = earnings_2014 + ' ' + column_names.iloc[18] 
@@ -222,6 +226,7 @@ df_2014.columns = column_names
 
 ################################################################## Concatenate all the results
 
+#concatenate all the results
 report = pd.concat([df_2020, df_2017, df_2014])
 
 #delete brackets around numbers
@@ -251,12 +256,11 @@ for col in report.columns:
   if report[col].dtype != float:
     report[col] = report[col].str.replace(',', '').astype(int)
 
-report.loc[[2016, 2015], 'Other income, net'] = np.nan
 
 #replace missing values with interpolate from pandas
+report.loc[[2016, 2015], 'Other income, net'] = np.nan
 report['Other income, net'].interpolate(method='linear', inplace = True)
-
-# change again the type in int
+# then change  the type to int
 report['Other income, net'] = report['Other income, net'].astype(int)
 
 
